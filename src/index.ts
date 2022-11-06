@@ -394,45 +394,45 @@ const transform = async ({
   //   exit(1);
   // }
 
-  if (invalidFunctions.length > 0) {
-    console.error(
-      '⚡️ ERROR: Failed to produce a Cloudflare Pages build from the project.'
-    );
-    console.error(
-      '⚡️ The following functions were not configured to run with the Edge Runtime:'
-    );
-    console.error('⚡️');
-    invalidFunctions.map((invalidFunction) => {
-      console.error(`⚡️  - ${invalidFunction}`);
-    });
-    console.error('⚡️');
-    console.error('⚡️ If this is a Next.js project:');
-    console.error('⚡️');
-    console.error(
-      '⚡️  - you can read more about configuring Edge API Routes here (https://nextjs.org/docs/api-routes/edge-api-routes),'
-    );
-    console.error('⚡️');
-    console.error(
-      '⚡️  - you can try enabling the Edge Runtime for a specific page by exporting the following from your page:'
-    );
-    console.error('⚡️');
-    console.error(
-      "⚡️      export const config = { runtime: 'experimental-edge' };"
-    );
-    console.error('⚡️');
-    console.error(
-      "⚡️  - or you can try enabling the Edge Runtime for all pages in your project by adding the following to your 'next.config.js' file:"
-    );
-    console.error('⚡️');
-    console.error(
-      "⚡️      const nextConfig = { experimental: { runtime: 'experimental-edge'} };"
-    );
-    console.error('⚡️');
-    console.error(
-      '⚡️ You can read more about the Edge Runtime here: https://nextjs.org/docs/advanced-features/react-18/switchable-runtime'
-    );
-    exit(1);
-  }
+  // if (invalidFunctions.length > 0) {
+  //   console.error(
+  //     '⚡️ ERROR: Failed to produce a Cloudflare Pages build from the project.'
+  //   );
+  //   console.error(
+  //     '⚡️ The following functions were not configured to run with the Edge Runtime:'
+  //   );
+  //   console.error('⚡️');
+  //   invalidFunctions.map((invalidFunction) => {
+  //     console.error(`⚡️  - ${invalidFunction}`);
+  //   });
+  //   console.error('⚡️');
+  //   console.error('⚡️ If this is a Next.js project:');
+  //   console.error('⚡️');
+  //   console.error(
+  //     '⚡️  - you can read more about configuring Edge API Routes here (https://nextjs.org/docs/api-routes/edge-api-routes),'
+  //   );
+  //   console.error('⚡️');
+  //   console.error(
+  //     '⚡️  - you can try enabling the Edge Runtime for a specific page by exporting the following from your page:'
+  //   );
+  //   console.error('⚡️');
+  //   console.error(
+  //     "⚡️      export const config = { runtime: 'experimental-edge' };"
+  //   );
+  //   console.error('⚡️');
+  //   console.error(
+  //     "⚡️  - or you can try enabling the Edge Runtime for all pages in your project by adding the following to your 'next.config.js' file:"
+  //   );
+  //   console.error('⚡️');
+  //   console.error(
+  //     "⚡️      const nextConfig = { experimental: { runtime: 'experimental-edge'} };"
+  //   );
+  //   console.error('⚡️');
+  //   console.error(
+  //     '⚡️ You can read more about the Edge Runtime here: https://nextjs.org/docs/advanced-features/react-18/switchable-runtime'
+  //   );
+  //   exit(1);
+  // }
 
   const functionsFile = join(
     tmpdir(),
