@@ -1,13 +1,13 @@
-import { readFile, writeFile, mkdir, stat, readdir } from "fs/promises";
-import { exit } from "process";
-import { spawn } from "child_process";
-import { dirname, join, relative, resolve } from "path";
-import { build } from "esbuild";
-import { tmpdir } from "os";
-import { watch } from "chokidar";
-import pLimit from "p-limit";
-import acorn, { parse, Node } from "acorn";
-import { generate } from "astring";
+import { readFile, writeFile, mkdir, stat, readdir } from 'fs/promises';
+import { exit } from 'process';
+import { spawn } from 'child_process';
+import { dirname, join, relative, resolve } from 'path';
+import { build } from 'esbuild';
+import { tmpdir } from 'os';
+import { watch } from 'chokidar';
+import pLimit from 'p-limit';
+import acorn, { parse, Node } from 'acorn';
+import { generate } from 'astring';
 
 type LooseNode = Node & {
   expression?: LooseNode;
@@ -26,36 +26,36 @@ type LooseNode = Node & {
 
 const prepVercel = async () => {
   try {
-    await stat(".vercel/project.json");
+    await stat('.vercel/project.json');
   } catch {
-    await mkdir(".vercel", { recursive: true });
+    await mkdir('.vercel', { recursive: true });
     await writeFile(
-      ".vercel/project.json",
-      JSON.stringify({ projectId: "_", orgId: "_", settings: {} })
+      '.vercel/project.json',
+      JSON.stringify({ projectId: '_', orgId: '_', settings: {} })
     );
   }
-  console.log("⚡️");
+  console.log('⚡️');
   console.log("⚡️ Installing 'vercel' CLI...");
-  console.log("⚡️");
+  console.log('⚡️');
 
-  const vercelBuild = spawn("npm", ["install", "-D", "vercel"]);
+  const vercelBuild = spawn('npm', ['install', '-D', 'vercel']);
 
-  vercelBuild.stdout.on("data", (data) => {
-    const lines: string[] = data.toString().split("\n");
+  vercelBuild.stdout.on('data', (data) => {
+    const lines: string[] = data.toString().split('\n');
     lines.map((line) => {
       console.log(`▲ ${line}`);
     });
   });
 
-  vercelBuild.stderr.on("data", (data) => {
-    const lines: string[] = data.toString().split("\n");
+  vercelBuild.stderr.on('data', (data) => {
+    const lines: string[] = data.toString().split('\n');
     lines.map((line) => {
       console.log(`▲ ${line}`);
     });
   });
 
   await new Promise((resolve, reject) => {
-    vercelBuild.on("close", (code) => {
+    vercelBuild.on('close', (code) => {
       if (code === 0) {
         resolve(null);
       } else {
@@ -64,35 +64,35 @@ const prepVercel = async () => {
     });
   });
 
-  console.log("⚡️");
-  console.log("⚡️");
+  console.log('⚡️');
+  console.log('⚡️');
   console.log("⚡️ Completed 'npx vercel build'.");
-  console.log("⚡️");
+  console.log('⚡️');
 };
 
 const buildVercel = async () => {
-  console.log("⚡️");
+  console.log('⚡️');
   console.log("⚡️ Building project with 'npx vercel build'...");
-  console.log("⚡️");
+  console.log('⚡️');
 
-  const vercelBuild = spawn("npx", ["vercel", "build"]);
+  const vercelBuild = spawn('npx', ['vercel', 'build']);
 
-  vercelBuild.stdout.on("data", (data) => {
-    const lines: string[] = data.toString().split("\n");
+  vercelBuild.stdout.on('data', (data) => {
+    const lines: string[] = data.toString().split('\n');
     lines.map((line) => {
       console.log(`▲ ${line}`);
     });
   });
 
-  vercelBuild.stderr.on("data", (data) => {
-    const lines: string[] = data.toString().split("\n");
+  vercelBuild.stderr.on('data', (data) => {
+    const lines: string[] = data.toString().split('\n');
     lines.map((line) => {
       console.log(`▲ ${line}`);
     });
   });
 
   await new Promise((resolve, reject) => {
-    vercelBuild.on("close", (code) => {
+    vercelBuild.on('close', (code) => {
       if (code === 0) {
         resolve(null);
       } else {
@@ -101,10 +101,10 @@ const buildVercel = async () => {
     });
   });
 
-  console.log("⚡️");
-  console.log("⚡️");
+  console.log('⚡️');
+  console.log('⚡️');
   console.log("⚡️ Completed 'npx vercel build'.");
-  console.log("⚡️");
+  console.log('⚡️');
 };
 
 interface MiddlewareManifest {
@@ -142,7 +142,7 @@ const transform = async ({
 }) => {
   let config;
   try {
-    config = JSON.parse(await readFile(".vercel/output/config.json", "utf8"));
+    config = JSON.parse(await readFile('.vercel/output/config.json', 'utf8'));
   } catch {
     console.error(
       "⚡️ ERROR: Could not read the '.vercel/output/config.json' file."
@@ -160,7 +160,7 @@ const transform = async ({
     exit(1);
   }
 
-  const functionsDir = resolve(".vercel/output/functions");
+  const functionsDir = resolve('.vercel/output/functions');
   let functionsExist = false;
   try {
     await stat(functionsDir);
@@ -168,7 +168,7 @@ const transform = async ({
   } catch {}
 
   if (!functionsExist) {
-    console.log("⚡️ No functions detected.");
+    console.log('⚡️ No functions detected.');
     return;
   }
 
@@ -190,20 +190,20 @@ const transform = async ({
         const isDirectory = (await stat(filepath)).isDirectory();
         const relativePath = relative(functionsDir, filepath);
 
-        if (isDirectory && filepath.endsWith(".func")) {
-          const name = relativePath.replace(/\.func$/, "");
+        if (isDirectory && filepath.endsWith('.func')) {
+          const name = relativePath.replace(/\.func$/, '');
 
-          const functionConfigFile = join(filepath, ".vc-config.json");
-          let functionConfig: { runtime: "edge"; entrypoint: string };
+          const functionConfigFile = join(filepath, '.vc-config.json');
+          let functionConfig: { runtime: 'edge'; entrypoint: string };
           try {
-            let contents = await readFile(functionConfigFile, "utf8");
+            let contents = await readFile(functionConfigFile, 'utf8');
             functionConfig = JSON.parse(contents);
           } catch {
             invalidFunctions.push(file);
             return;
           }
 
-          if (functionConfig.runtime !== "edge") {
+          if (functionConfig.runtime !== 'edge') {
             invalidFunctions.push(name);
             return;
           }
@@ -220,31 +220,31 @@ const transform = async ({
             return;
           }
 
-          let contents = await readFile(functionFile, "utf8");
+          let contents = await readFile(functionFile, 'utf8');
           contents = contents.replace(
             // TODO: This hack is not good. We should replace this with something less brittle ASAP
             /(Object.defineProperty\(globalThis,\s*"__import_unsupported",\s*{[\s\S]*?configurable:\s*)([^,}]*)(.*}\s*\))/gm,
-            "$1true$3"
+            '$1true$3'
           );
 
           if (experimentalMinify) {
             const parsedContents = parse(contents, {
-              ecmaVersion: "latest",
-              sourceType: "module",
+              ecmaVersion: 'latest',
+              sourceType: 'module',
             }) as Node & { body: LooseNode[] };
 
             const expressions = parsedContents.body
               .filter(
                 ({ type, expression }) =>
-                  type === "ExpressionStatement" &&
-                  expression?.type === "CallExpression" &&
-                  expression.callee?.type === "MemberExpression" &&
-                  expression.callee.object?.type === "AssignmentExpression" &&
-                  expression.callee.object.left?.object?.name === "self" &&
+                  type === 'ExpressionStatement' &&
+                  expression?.type === 'CallExpression' &&
+                  expression.callee?.type === 'MemberExpression' &&
+                  expression.callee.object?.type === 'AssignmentExpression' &&
+                  expression.callee.object.left?.object?.name === 'self' &&
                   expression.callee.object.left.property?.value ===
-                    "webpackChunk_N_E" &&
+                    'webpackChunk_N_E' &&
                   expression.arguments?.[0]?.elements?.[1]?.type ===
-                    "ObjectExpression"
+                    'ObjectExpression'
               )
               .map(
                 (node) =>
@@ -265,7 +265,7 @@ const transform = async ({
                       "⚡️ Try removing the '--experimental-minify' argument."
                     );
                     console.error(
-                      "⚡️ Please report this at https://github.com/cloudflare/next-on-pages/issues."
+                      '⚡️ Please report this at https://github.com/cloudflare/next-on-pages/issues.'
                     );
                     exit(1);
                   }
@@ -276,22 +276,22 @@ const transform = async ({
                 const chunkFilePath = join(tmpWebpackDir, `${key}.js`);
 
                 const newValue = {
-                  type: "MemberExpression",
+                  type: 'MemberExpression',
                   object: {
-                    type: "CallExpression",
+                    type: 'CallExpression',
                     callee: {
-                      type: "Identifier",
-                      name: "require",
+                      type: 'Identifier',
+                      name: 'require',
                     },
                     arguments: [
                       {
-                        type: "Literal",
+                        type: 'Literal',
                         value: chunkFilePath,
                         raw: JSON.stringify(chunkFilePath),
                       },
                     ],
                   },
-                  property: { type: "Identifier", name: "default" },
+                  property: { type: 'Identifier', name: 'default' },
                 };
 
                 chunkExpression.value = newValue;
@@ -306,7 +306,7 @@ const transform = async ({
           await writeFile(newFilePath, contents);
 
           functionsMap.set(
-            relative(functionsDir, filepath).slice(0, -".func".length),
+            relative(functionsDir, filepath).slice(0, -'.func'.length),
             newFilePath
           );
         } else if (isDirectory) {
@@ -325,7 +325,7 @@ const transform = async ({
   }
 
   if (functionsMap.size === 0) {
-    console.log("⚡️ No functions detected.");
+    console.log('⚡️ No functions detected.');
     return;
   }
 
@@ -334,10 +334,10 @@ const transform = async ({
     // Annoying that we don't get this from the `.vercel` directory.
     // Maybe we eventually just construct something similar from the `.vercel/output/functions` directory with the same magic filename/precendence rules?
     middlewareManifest = JSON.parse(
-      await readFile(".next/server/middleware-manifest.json", "utf8")
+      await readFile('.next/server/middleware-manifest.json', 'utf8')
     );
   } catch {
-    console.error("⚡️ ERROR: Could not read the functions manifest.");
+    console.error('⚡️ ERROR: Could not read the functions manifest.');
     exit(1);
   }
 
@@ -346,7 +346,7 @@ const transform = async ({
       `⚡️ ERROR: Unknown functions manifest version. Expected 2 but found ${middlewareManifest.version}.`
     );
     console.error(
-      "⚡️ Please report this at https://github.com/cloudflare/next-on-pages/issues."
+      '⚡️ Please report this at https://github.com/cloudflare/next-on-pages/issues.'
     );
     exit(1);
   }
@@ -369,9 +369,9 @@ const transform = async ({
   const middlewareEntries = Object.values(middlewareManifest.middleware);
   const functionsEntries = Object.values(middlewareManifest.functions);
   for (const [name, filepath] of functionsMap) {
-    if (name === "middleware" && middlewareEntries.length > 0) {
+    if (name === 'middleware' && middlewareEntries.length > 0) {
       for (const entry of middlewareEntries) {
-        if ("middleware" === entry?.name) {
+        if ('middleware' === entry?.name) {
           hydratedMiddleware.set(name, { matchers: entry.matchers, filepath });
         }
       }
@@ -384,52 +384,52 @@ const transform = async ({
     }
   }
 
-  if (hydratedMiddleware.size + hydratedFunctions.size !== functionsMap.size) {
-    console.error(
-      "⚡️ ERROR: Could not map all functions to an entry in the manifest."
-    );
-    console.error(
-      "⚡️ Please report this at https://github.com/cloudflare/next-on-pages/issues."
-    );
-    exit(1);
-  }
+  // if (hydratedMiddleware.size + hydratedFunctions.size !== functionsMap.size) {
+  //   console.error(
+  //     "⚡️ ERROR: Could not map all functions to an entry in the manifest."
+  //   );
+  //   console.error(
+  //     "⚡️ Please report this at https://github.com/cloudflare/next-on-pages/issues."
+  //   );
+  //   exit(1);
+  // }
 
   if (invalidFunctions.length > 0) {
     console.error(
-      "⚡️ ERROR: Failed to produce a Cloudflare Pages build from the project."
+      '⚡️ ERROR: Failed to produce a Cloudflare Pages build from the project.'
     );
     console.error(
-      "⚡️ The following functions were not configured to run with the Edge Runtime:"
+      '⚡️ The following functions were not configured to run with the Edge Runtime:'
     );
-    console.error("⚡️");
+    console.error('⚡️');
     invalidFunctions.map((invalidFunction) => {
       console.error(`⚡️  - ${invalidFunction}`);
     });
-    console.error("⚡️");
-    console.error("⚡️ If this is a Next.js project:");
-    console.error("⚡️");
+    console.error('⚡️');
+    console.error('⚡️ If this is a Next.js project:');
+    console.error('⚡️');
     console.error(
-      "⚡️  - you can read more about configuring Edge API Routes here (https://nextjs.org/docs/api-routes/edge-api-routes),"
+      '⚡️  - you can read more about configuring Edge API Routes here (https://nextjs.org/docs/api-routes/edge-api-routes),'
     );
-    console.error("⚡️");
+    console.error('⚡️');
     console.error(
-      "⚡️  - you can try enabling the Edge Runtime for a specific page by exporting the following from your page:"
+      '⚡️  - you can try enabling the Edge Runtime for a specific page by exporting the following from your page:'
     );
-    console.error("⚡️");
+    console.error('⚡️');
     console.error(
       "⚡️      export const config = { runtime: 'experimental-edge' };"
     );
-    console.error("⚡️");
+    console.error('⚡️');
     console.error(
       "⚡️  - or you can try enabling the Edge Runtime for all pages in your project by adding the following to your 'next.config.js' file:"
     );
-    console.error("⚡️");
+    console.error('⚡️');
     console.error(
       "⚡️      const nextConfig = { experimental: { runtime: 'experimental-edge'} };"
     );
-    console.error("⚡️");
+    console.error('⚡️');
     console.error(
-      "⚡️ You can read more about the Edge Runtime here: https://nextjs.org/docs/advanced-features/react-18/switchable-runtime"
+      '⚡️ You can read more about the Edge Runtime here: https://nextjs.org/docs/advanced-features/react-18/switchable-runtime'
     );
     exit(1);
   }
@@ -449,7 +449,7 @@ const transform = async ({
             matchers
           )}, entrypoint: require('${filepath}')}`
       )
-      .join(",")}};
+      .join(',')}};
       
       export const __MIDDLEWARE__ = {${[...hydratedMiddleware.entries()]
         .map(
@@ -458,51 +458,51 @@ const transform = async ({
               matchers
             )}, entrypoint: require('${filepath}')}`
         )
-        .join(",")}};`
+        .join(',')}};`
   );
 
   await build({
-    entryPoints: [join(__dirname, "../templates/_worker.js")],
+    entryPoints: [join(__dirname, '../templates/_worker.js')],
     bundle: true,
     inject: [
-      join(__dirname, "../templates/_worker.js/globals.js"),
+      join(__dirname, '../templates/_worker.js/globals.js'),
       functionsFile,
     ],
-    target: "es2021",
-    platform: "neutral",
+    target: 'es2021',
+    platform: 'neutral',
     define: {
       __CONFIG__: JSON.stringify(config),
     },
-    outfile: ".vercel/output/static/_worker.js",
+    outfile: '.vercel/output/static/_worker.js',
   });
 
   console.log("⚡️ Generated '.vercel/output/static/_worker.js'.");
 };
 
 const help = () => {
-  console.log("⚡️");
-  console.log("⚡️ Usage: npx @cloudflare/next-to-pages [options]");
-  console.log("⚡️");
-  console.log("⚡️ Options:");
-  console.log("⚡️");
-  console.log("⚡️   --help:                Shows this help message");
-  console.log("⚡️");
+  console.log('⚡️');
+  console.log('⚡️ Usage: npx @cloudflare/next-to-pages [options]');
+  console.log('⚡️');
+  console.log('⚡️ Options:');
+  console.log('⚡️');
+  console.log('⚡️   --help:                Shows this help message');
+  console.log('⚡️');
   console.log(
     "⚡️   --skip-build:          Doesn't run 'vercel build' automatically"
   );
-  console.log("⚡️");
+  console.log('⚡️');
   console.log(
-    "⚡️   --experimental-minify: Attempts to minify the functions of a project (by de-duping webpack chunks)"
+    '⚡️   --experimental-minify: Attempts to minify the functions of a project (by de-duping webpack chunks)'
   );
-  console.log("⚡️");
+  console.log('⚡️');
   console.log(
-    "⚡️   --watch:               Automatically rebuilds when the project is edited"
+    '⚡️   --watch:               Automatically rebuilds when the project is edited'
   );
-  console.log("⚡️");
-  console.log("⚡️");
-  console.log("⚡️ GitHub: https://github.com/cloudflare/next-on-pages");
+  console.log('⚡️');
+  console.log('⚡️');
+  console.log('⚡️ GitHub: https://github.com/cloudflare/next-on-pages');
   console.log(
-    "⚡️ Docs: https://developers.cloudflare.com/pages/framework-guides/deploy-a-nextjs-site/"
+    '⚡️ Docs: https://developers.cloudflare.com/pages/framework-guides/deploy-a-nextjs-site/'
   );
 };
 
@@ -522,33 +522,33 @@ const main = async ({
 };
 
 (async () => {
-  console.log("⚡️ @cloudflare/next-to-pages CLI");
+  console.log('⚡️ @cloudflare/next-to-pages CLI');
 
-  if (process.argv.includes("--help")) {
+  if (process.argv.includes('--help')) {
     help();
     return;
   }
 
-  const skipBuild = process.argv.includes("--skip-build");
-  const experimentalMinify = process.argv.includes("--experimental-minify");
+  const skipBuild = process.argv.includes('--skip-build');
+  const experimentalMinify = process.argv.includes('--experimental-minify');
   const limit = pLimit(1);
 
-  if (process.argv.includes("--watch")) {
-    watch(".", {
+  if (process.argv.includes('--watch')) {
+    watch('.', {
       ignored: [
-        ".git",
-        "node_modules",
-        ".vercel",
-        ".next",
-        "package-lock.json",
-        "yarn.lock",
+        '.git',
+        'node_modules',
+        '.vercel',
+        '.next',
+        'package-lock.json',
+        'yarn.lock',
       ],
       ignoreInitial: true,
-    }).on("all", () => {
+    }).on('all', () => {
       if (limit.pendingCount === 0) {
         limit(() =>
           main({ skipBuild, experimentalMinify }).then(() => {
-            console.log("⚡️");
+            console.log('⚡️');
             console.log(
               "⚡️ Running in '--watch' mode. Awaiting changes... (Ctrl+C to exit.)"
             );
@@ -560,8 +560,8 @@ const main = async ({
 
   limit(() =>
     main({ skipBuild, experimentalMinify }).then(() => {
-      if (process.argv.includes("--watch")) {
-        console.log("⚡️");
+      if (process.argv.includes('--watch')) {
+        console.log('⚡️');
         console.log(
           "⚡️ Running in '--watch' mode. Awaiting changes... (Ctrl+C to exit.)"
         );
